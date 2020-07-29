@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="o-*\**" />
+    <EmbeddedResource Remove="o-*\**" />
+    <None Remove="o-*\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit.assert" Version="2.4.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PluginLibrary\PluginLibrary.csproj">
+      <Private>false</Private>
+      <ExcludeAssets>all</ExcludeAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\UtilitiesLibrary\UtilitiesLibrary.csproj" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Copy SourceFiles="..\PluginLibrary\bin\$(Configuration)\net5.0\PluginLibrary.dll" DestinationFolder="$(OutputPath)" />
+  </Target>
+
+  <Target Name="SAfterPublish" AfterTargets="Publish">
+    <Copy SourceFiles="$(OutputPath)\PluginLibrary.dll" DestinationFolder="$(PublishDir)" />
+  </Target>
+
+</Project>

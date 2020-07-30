@@ -73,12 +73,15 @@ namespace FeatureTest
                 Assert.Equal("<Unknown>", module.Name);
                 Assert.Equal("<Unknown>", module.FullyQualifiedName);
             }
+
+            Assert.Equal(module.Assembly.GetName().Name + ".dll", module.ScopeName);
         }
 
         void ValidateOnDiskModuleFullyQualifiedName(Module module)
         {
             Assert.NotEqual("<Unknown>", module.Name);
             Assert.Contains(module.Name, module.FullyQualifiedName);
+            Assert.Equal(module.Assembly.GetName().Name + ".dll", module.ScopeName);
         }
     }
 }

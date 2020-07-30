@@ -42,6 +42,8 @@ namespace FeatureTest
             Assert.Contains("System.Private.CoreLib", assembly.EscapedCodeBase);
             Assert.Contains("System.Private.CoreLib", assembly.GetName().CodeBase);
             Assert.Contains("System.Private.CoreLib", assembly.GetName().EscapedCodeBase);
+
+            Assert.False(assembly.IsDynamic);
         }
 
         private void ValidateBundledAssemblyLocation(Assembly assembly)
@@ -70,6 +72,7 @@ namespace FeatureTest
             Assert.Contains(assembly.GetName().Name, assembly.EscapedCodeBase);
             Assert.Contains(assembly.GetName().Name, assembly.GetName().CodeBase);
             Assert.Contains(assembly.GetName().Name, assembly.GetName().EscapedCodeBase);
+            Assert.False(assembly.IsDynamic);
         }
 
         private void ValidateOnDiskAssemblyLocation(Assembly assembly)
@@ -79,6 +82,7 @@ namespace FeatureTest
             Assert.Contains(assembly.GetName().Name, assembly.EscapedCodeBase);
             Assert.Contains(assembly.GetName().Name, assembly.GetName().CodeBase);
             Assert.Contains(assembly.GetName().Name, assembly.GetName().EscapedCodeBase);
+            Assert.False(assembly.IsDynamic);
         }
     }
 }

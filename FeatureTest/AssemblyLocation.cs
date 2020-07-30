@@ -16,7 +16,7 @@ namespace FeatureTest
         public void LocationOfAppAssembly() => ValidateBundledAssemblyLocation(typeof(AssemblyLocation).Assembly);
 
         [Fact]
-        public void LocationOfProjectReferenceAssembly() => ValidateBundledAssemblyLocation(typeof(SingleFileUtilities).Assembly);
+        public void LocationOfProjectReferenceAssembly() => ValidateBundledAssemblyLocation(typeof(DeploymentUtilities).Assembly);
 
         [Fact]
         public void LocationOfPackageReferenceAssembly() => ValidateBundledAssemblyLocation(typeof(Assert).Assembly);
@@ -48,7 +48,7 @@ namespace FeatureTest
 
         private void ValidateBundledAssemblyLocation(Assembly assembly)
         {
-            if (SingleFileUtilities.IsSingleFile)
+            if (DeploymentUtilities.IsSingleFile)
             {
                 ValidateEmptyAssemblyLocation(assembly);
             }

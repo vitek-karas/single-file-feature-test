@@ -16,7 +16,7 @@ namespace FeatureTest
         public void GetFilesOnAppAssembly() => ValidateBundlededGetFiles(typeof(ModuleFullyQualifiedName).Assembly);
 
         [Fact]
-        public void GetFilesOnProjectReferenceAssembly() => ValidateBundlededGetFiles(typeof(SingleFileUtilities).Assembly);
+        public void GetFilesOnProjectReferenceAssembly() => ValidateBundlededGetFiles(typeof(DeploymentUtilities).Assembly);
 
         [Fact]
         public void GetFilesOnPackageReferenceAssembly() => ValidateBundlededGetFiles(typeof(Assert).Assembly);
@@ -40,7 +40,7 @@ namespace FeatureTest
 
         void ValidateBundlededGetFiles(Assembly assembly)
         {
-            if (SingleFileUtilities.IsSingleFile)
+            if (DeploymentUtilities.IsSingleFile)
             {
                 ValidateInMemoryGetFiles(assembly);
             }
@@ -53,7 +53,7 @@ namespace FeatureTest
         void ValidateInMemoryGetFiles(Assembly assembly)
         {
             // BUG https://github.com/dotnet/runtime/issues/40103
-            if (SingleFileUtilities.IsSingleFile)
+            if (DeploymentUtilities.IsSingleFile)
             {
                 Assert.Throws<FileNotFoundException>(() => assembly.GetFiles());
                 Assert.Throws<FileNotFoundException>(() => assembly.GetFile(assembly.GetName().Name + ".dll"));

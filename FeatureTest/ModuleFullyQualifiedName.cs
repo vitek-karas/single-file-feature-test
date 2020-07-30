@@ -16,7 +16,7 @@ namespace FeatureTest
         public void FullyQualifiedNameOfAppAssembly() => ValidateBundledFullyQualifiedName(typeof(ModuleFullyQualifiedName).Assembly);
 
         [Fact]
-        public void FullyQualifiedNameOfProjectReferenceAssembly() => ValidateBundledFullyQualifiedName(typeof(SingleFileUtilities).Assembly);
+        public void FullyQualifiedNameOfProjectReferenceAssembly() => ValidateBundledFullyQualifiedName(typeof(DeploymentUtilities).Assembly);
 
         [Fact]
         public void FullyQualifiedNameOfPackageReferenceAssembly() => ValidateBundledFullyQualifiedName(typeof(Assert).Assembly);
@@ -44,7 +44,7 @@ namespace FeatureTest
             Assert.Equal(1, modules.Length);
             var module = modules[0];
 
-            if (SingleFileUtilities.IsSingleFile)
+            if (DeploymentUtilities.IsSingleFile)
             {
                 ValidateUnknownModuleFullyQualifiedName(module);
             }
@@ -57,7 +57,7 @@ namespace FeatureTest
         void ValidateUnknownModuleFullyQualifiedName(Module module)
         {
             // BUG https://github.com/dotnet/runtime/issues/40103
-            if (SingleFileUtilities.IsSingleFile)
+            if (DeploymentUtilities.IsSingleFile)
             {
                 Assert.Throws<FileNotFoundException>(() =>
                 {

@@ -10,9 +10,12 @@ namespace FeatureTest
             int total = 0;
             int failed = 0;
             foreach (var testMethod in typeof(Program).Assembly
-                .GetTypes().SelectMany(t => 
-                    t.GetMethods(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
-                        .Where(m => m.IsDefined(typeof (FactAttribute), false))))
+                .GetTypes()
+                    .OrderBy(t => t.Name)
+                    .SelectMany(t => 
+                        t.GetMethods(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
+                            .OrderBy(m => m.Name)
+                            .Where(m => m.IsDefined(typeof (FactAttribute), false))))
             {
                 total++;
                 Console.WriteLine($"{testMethod.DeclaringType.Name}.{testMethod.Name}");

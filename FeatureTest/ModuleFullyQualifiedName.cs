@@ -61,17 +61,23 @@ namespace FeatureTest
             {
                 Assert.Throws<FileNotFoundException>(() =>
                 {
+                    _ = module.Name;
+                });
+                Assert.Throws<FileNotFoundException>(() =>
+                {
                     _ = module.FullyQualifiedName;
                 });
             }
             else
             {
+                Assert.Equal("<Unknown>", module.Name);
                 Assert.Equal("<Unknown>", module.FullyQualifiedName);
             }
         }
 
         void ValidateOnDiskModuleFullyQualifiedName(Module module)
         {
+            Assert.NotEqual("<Unknown>", module.Name);
             Assert.Contains(module.Name, module.FullyQualifiedName);
         }
     }

@@ -1,0 +1,52 @@
+﻿using System;
+using System.IO;
+using System.Reflection;
+using System.Runtime.Loader;
+using UtilitiesLibrary;
+using Xunit;
+
+namespace FeatureTest
+{
+    public class DependencyResolver
+    {
+        [Fact]
+        public void ResolvePluginFromBaseDirectory()
+        {
+            string pluginPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PluginLibrary.dll");
+            var resolver = new AssemblyDependencyResolver(pluginPath);
+            Assert.Equal(pluginPath, resolver.ResolveAssemblyToPath(new AssemblyName("PluginLibrary")), ignoreCase: true);
+            Assert.Null(resolver.ResolveAssemblyToPath(new AssemblyName("UtilitiesLibrary")));
+        }
+
+        [Fact]
+        public void ResolvePluginFromTemp()
+        {
+            string subDirectory = Path.Combine(Path.GetTempPath(), "FeatureTest.Temp");
+            Directory.CreateDirectory(subDirectory);
+            File.Copy(
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PluginLibrary.dll"), 
+                Path.Combine(subDirectory, "PluginLibrary.dll"),
+                overwrite: true);
+            File.Copy(
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PluginLibrary.deps.json"),
+                Path.Combine(subDirectory, "PluginLibrary.deps.json"),
+                overwrite: true);
+
+            string pluginPath = Path.Combine(subDirectory, "PluginLibrary.dll");
+            var resolver = new AssemblyDependencyResolver(pluginPath);
+
+            // BUG https://github.com/dotnet/runtime/issues/40013
+            // The resolution should work the same regardless if it's single-file or not
+            if (DeploymentUtilities.IsSingleFile)
+            {
+                Assert.Equal(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PluginLibrary.dll"), resolver.ResolveAssemblyToPath(new AssemblyName("PluginLibrary")), ignoreCase: true);
+            }
+            else
+            {
+                Assert.Equal(pluginPath, resolver.ResolveAssemblyToPath(new AssemblyName("PluginLibrary")), ignoreCase: true);
+            }
+
+            Assert.Null(resolver.ResolveAssemblyToPath(new AssemblyName("UtilitiesLibrary")));
+        }
+    }
+}

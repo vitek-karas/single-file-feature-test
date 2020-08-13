@@ -5,11 +5,21 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="o-*\**" />
-    <EmbeddedResource Remove="o-*\**" />
-    <None Remove="o-*\**" />
-  </ItemGroup>
+  <!-- Set these properties to point to the local clone of the dotnet/runtime repo which is fully built
+       and specify the platform and configuration of the runtime build to use.
+       In order for this to work, please "dotnet clean" and delete output directories
+       before running "dotnet publish".
+       This only takes effect for self-contained publishes, FDD will still use the active runtime
+       installation. -->
+  <!--
+  <PropertyGroup">
+    <CustomizePublishSingleFile_RuntimeRepoRoot>F:\dotnet\runtime</CustomizePublishSingleFile_RuntimeRepoRoot>
+    <CustomizePublishSingleFile_CoreClrConfig>Windows_NT.x64.Debug</CustomizePublishSingleFile_CoreClrConfig>
+    <CustomizePublishSingleFile_CoreHostConfig>win-x64.Debug</CustomizePublishSingleFile_CoreHostConfig>
+  </PropertyGroup>
+  -->
+
+  <Import Project="../CustomizePublishSingleFile.targets"/>
 
   <ItemGroup>
     <PackageReference Include="xunit.assert" Version="2.4.1" />
@@ -25,10 +35,12 @@
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Copy SourceFiles="..\PluginLibrary\bin\$(Configuration)\net5.0\PluginLibrary.dll" DestinationFolder="$(OutputPath)" />
+    <Copy SourceFiles="..\PluginLibrary\bin\$(Configuration)\net5.0\PluginLibrary.deps.json" DestinationFolder="$(OutputPath)" />
   </Target>
 
   <Target Name="SAfterPublish" AfterTargets="Publish">
     <Copy SourceFiles="$(OutputPath)\PluginLibrary.dll" DestinationFolder="$(PublishDir)" />
+    <Copy SourceFiles="$(OutputPath)\PluginLibrary.deps.json" DestinationFolder="$(PublishDir)" />
   </Target>
 
 </Project>

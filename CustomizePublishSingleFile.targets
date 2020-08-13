@@ -1,0 +1,66 @@
+<Project>
+  <Target Name="__CustomizePublishSingleFile_Initialize">
+    <PropertyGroup Condition="'$(CustomizePublishSingleFile_Configuration)' != ''">
+      <__CustomizePublishSingleFile_CoreClrConfig>$(OS).$(Architecture).$(CustomizePublishSingleFile_Configuration)</__CustomizePublishSingleFile_CoreClrConfig>
+      <__CustomizePublishSingleFile_CoreHostConfig>$(RuntimeIdentifier).$(CustomizePublishSingleFile_Configuration)</__CustomizePublishSingleFile_CoreHostConfig>
+    </PropertyGroup>
+    <ItemGroup Condition="('$(CustomizePublishSingleFile_RuntimeRepoRoot)' != '') And ('$(CustomizePublishSingleFile_CoreClrConfig)' != '')">
+      <__CustomizePublishSingleFile_FilesToBundle Include="$(CustomizePublishSingleFile_RuntimeRepoRoot)/artifacts/bin/coreclr/$(CustomizePublishSingleFile_CoreClrConfig)/$(_NativeLibraryPrefix)coreclr$(_NativeLibraryExtension)"/>
+      <__CustomizePublishSingleFile_FilesToBundle Include="$(CustomizePublishSingleFile_RuntimeRepoRoot)/artifacts/bin/coreclr/$(CustomizePublishSingleFile_CoreClrConfig)/$(_NativeLibraryPrefix)clrjit$(_NativeLibraryExtension)"/>
+      <__CustomizePublishSingleFile_FilesToBundle Include="$(CustomizePublishSingleFile_RuntimeRepoRoot)/artifacts/bin/coreclr/$(CustomizePublishSingleFile_CoreClrConfig)/$(_NativeLibraryPrefix)mscordaccore$(_NativeLibraryExtension)"/>
+      <__CustomizePublishSingleFile_FilesToBundle Include="$(CustomizePublishSingleFile_RuntimeRepoRoot)/artifacts/bin/coreclr/$(CustomizePublishSingleFile_CoreClrConfig)/System.Private.CoreLib.dll"/>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="__CustomizePublishSingleFile_GetFilesToBundleOverwrites" 
+          Inputs="%(_FilesToBundle.Identity)" 
+          Outputs="%(_FilesToBundle.Identity)"
+          DependsOnTargets="_ComputeFilesToBundle;__CustomizePublishSingleFile_Initialize">
+    <PropertyGroup>
+      <__Identity>%(_FilesToBundle.Identity)</__Identity>
+      <__FileName>$([System.IO.Path]::GetFileName($(__Identity)))</__FileName>
+    </PropertyGroup>
+
+    <CreateItem Condition="('%(__CustomizePublishSingleFile_FilesToBundle.Identity)' != '') And ('$([System.IO.Path]::GetFileName(%(__CustomizePublishSingleFile_FilesToBundle.Identity)))' == '$(__FileName)')"
+                Include="$(__Identity)">
+      <Output TaskParameter="Include" ItemName="__FilesToBundleOverrides"/>
+    </CreateItem>
+    <CreateItem Condition="('%(__CustomizePublishSingleFile_FilesToBundle.Identity)' != '') And ('$([System.IO.Path]::GetFileName(%(__CustomizePublishSingleFile_FilesToBundle.Identity)))' == '$(__FileName)')"
+                Include="%(__CustomizePublishSingleFile_FilesToBundle.Identity)">
+      <Output TaskParameter="Include" ItemName="__NewFilesToBundleOverrides"/>
+    </CreateItem>
+  </Target>
+
+  <Target Name="__CustomizePublishSingleFile_UpdateFilesToBundle" 
+          DependsOnTargets="__CustomizePublishSingleFile_GetFilesToBundleOverwrites;__CustomizePublishSingleFile_Initialize">
+    <ItemGroup>
+      <__NewFilesToBundle Include="@(_FilesToBundle)" Exclude="@(__FilesToBundleOverrides)"/>
+      <__NewFilesToBundle Include="@(__NewFilesToBundleOverrides)">
+        <CopyToPublishDirectory>always</CopyToPublishDirectory>
+        <RelativePath>$([System.IO.Path]::GetFileName(%(Identity)))</RelativePath>
+      </__NewFilesToBundle>
+      <_FilesToBundle Remove="@(_FilesToBundle)"/>
+      <_FilesToBundle Include="@(__NewFilesToBundle)"/>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="__CustomizePublishSingleFile_UpdateGenerateSingleFileBundleInputs"
+          Condition="'$(PublishSingleFile)'=='true'"
+          DependsOnTargets="_ComputeFilesToBundle;__CustomizePublishSingleFile_UpdateFilesToBundle;__CustomizePublishSingleFile_Initialize"
+          BeforeTargets="GenerateSingleFileBundle">
+  </Target>
+
+  <Target Name="__CustomizePublishSingleFile_UpdateCreateAppHostInputs"
+          Condition="$(UseAppHost)"
+          DependsOnTargets="_ChooseAppHost;CoreCompile;__CustomizePublishSingleFile_Initialize"
+          BeforeTargets="_CreateAppHost">
+    <PropertyGroup Condition="('$(__CustomizePublishSingleFile_AppHostSourcePath)' == '') And ('$(CustomizePublishSingleFile_RuntimeRepoRoot)' != '') And ('$(CustomizePublishSingleFile_CoreHostConfig)' != '')">
+      <__CustomizePublishSingleFile_AppHostSourcePath Condition="'$([System.IO.Path]::GetFileNameWithoutExtension($(AppHostSourcePath)))' == '$(_DotNetSingleFileHostExecutableNameWithoutExtension)'">$(CustomizePublishSingleFile_RuntimeRepoRoot)/artifacts/bin/$(CustomizePublishSingleFile_CoreHostConfig)/corehost/$(_DotNetSingleFileHostExecutableNameWithoutExtension)$(_NativeExecutableExtension)</__CustomizePublishSingleFile_AppHostSourcePath>
+      <__CustomizePublishSingleFile_AppHostSourcePath Condition="'$(__CustomizePublishSingleFile_AppHostSourcePath)' == ''">$(CustomizePublishSingleFile_RuntimeRepoRoot)/artifacts/bin/$(CustomizePublishSingleFile_CoreHostConfig)/corehost/$(_DotNetAppHostExecutableNameWithoutExtension)$(_NativeExecutableExtension)</__CustomizePublishSingleFile_AppHostSourcePath>
+    </PropertyGroup>
+
+    <PropertyGroup>
+      <AppHostSourcePath Condition="'$(__CustomizePublishSingleFile_AppHostSourcePath)' != ''">$(__CustomizePublishSingleFile_AppHostSourcePath)</AppHostSourcePath>
+    </PropertyGroup>
+  </Target>
+</Project>

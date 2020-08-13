@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Runtime.Loader;
 using UtilitiesLibrary;
 using Xunit;
@@ -53,7 +54,7 @@ namespace FeatureTest
         void ValidateInMemoryGetFiles(Assembly assembly)
         {
             // BUG https://github.com/dotnet/runtime/issues/40103
-            if (DeploymentUtilities.IsSingleFile)
+            if (DeploymentUtilities.IsSingleFile || !RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 Assert.Throws<FileNotFoundException>(() => assembly.GetFiles());
                 Assert.Throws<FileNotFoundException>(() => assembly.GetFile(assembly.GetName().Name + ".dll"));

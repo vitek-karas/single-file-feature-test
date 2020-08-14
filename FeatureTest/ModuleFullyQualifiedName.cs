@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Runtime.Loader;
 using UtilitiesLibrary;
 using Xunit;
@@ -57,14 +58,16 @@ namespace FeatureTest
         void ValidateUnknownModuleFullyQualifiedName(Module module)
         {
             // BUG https://github.com/dotnet/runtime/issues/40103
-            if (DeploymentUtilities.IsSingleFile)
+            if (DeploymentUtilities.IsSingleFile && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 Assert.Throws<FileNotFoundException>(() =>
                 {
+                    Console.WriteLine(module.Name);
                     _ = module.Name;
                 });
                 Assert.Throws<FileNotFoundException>(() =>
                 {
+                    Console.WriteLine(module.FullyQualifiedName);
                     _ = module.FullyQualifiedName;
                 });
             }

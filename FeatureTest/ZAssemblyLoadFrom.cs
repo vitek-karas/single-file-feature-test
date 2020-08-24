@@ -20,12 +20,11 @@ namespace FeatureTest
                 ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, assembly.GetName().Name + ".dll")
                 : assembly.Location;
 
-            // BUG https://github.com/dotnet/runtime/issues/40138
-            //if (DeploymentUtilities.IsSingleFile && DeploymentUtilities.IsSelfContained)
-            //{
-            //    Assert.Throws<FileNotFoundException>(() => Assembly.LoadFrom(fullPath));
-            //}
-            //else
+            if (DeploymentUtilities.IsSingleFile && DeploymentUtilities.IsSelfContained)
+            {
+                Assert.Throws<FileNotFoundException>(() => Assembly.LoadFrom(fullPath));
+            }
+            else
             {
                 ValidateLoadFromFile(fullPath);
             }
@@ -46,12 +45,11 @@ namespace FeatureTest
         void ValidateLoadFromInAppAssembly(Assembly assembly)
         {
             string fullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, assembly.GetName().Name + ".dll");
-            // BUG https://github.com/dotnet/runtime/issues/40138
-            //if (DeploymentUtilities.IsSingleFile)
-            //{
-            //    Assert.Throws<FileNotFoundException>(() => Assembly.LoadFrom(fullPath));
-            //}
-            //else
+            if (DeploymentUtilities.IsSingleFile)
+            {
+                Assert.Throws<FileNotFoundException>(() => Assembly.LoadFrom(fullPath));
+            }
+            else
             {
                 ValidateLoadFromFile(fullPath);
             }

@@ -35,17 +35,7 @@ namespace FeatureTest
             string pluginPath = Path.Combine(subDirectory, "PluginLibrary.dll");
             var resolver = new AssemblyDependencyResolver(pluginPath);
 
-            // BUG https://github.com/dotnet/runtime/issues/40013
-            // The resolution should work the same regardless if it's single-file or not
-            if (DeploymentUtilities.IsSingleFile)
-            {
-                Assert.Equal(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PluginLibrary.dll"), resolver.ResolveAssemblyToPath(new AssemblyName("PluginLibrary")), ignoreCase: true);
-            }
-            else
-            {
-                Assert.Equal(pluginPath, resolver.ResolveAssemblyToPath(new AssemblyName("PluginLibrary")), ignoreCase: true);
-            }
-
+            Assert.Equal(pluginPath, resolver.ResolveAssemblyToPath(new AssemblyName("PluginLibrary")), ignoreCase: true);
             Assert.Null(resolver.ResolveAssemblyToPath(new AssemblyName("UtilitiesLibrary")));
         }
     }

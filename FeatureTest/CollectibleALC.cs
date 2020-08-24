@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Loader;
 using System.Threading;
 using UtilitiesLibrary;
+using Xunit;
 
 namespace FeatureTest
 {
@@ -24,12 +25,11 @@ namespace FeatureTest
                 ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, assembly.GetName().Name + ".dll")
                 : assembly.Location;
 
-            // BUG https://github.com/dotnet/runtime/issues/40138
-            //if (DeploymentUtilities.IsSingleFile && DeploymentUtilities.IsSelfContained)
-            //{
-            //    Assert.Throws<FileNotFoundException>(() => Assembly.LoadFrom(fullPath));
-            //}
-            //else
+            if (DeploymentUtilities.IsSingleFile && DeploymentUtilities.IsSelfContained)
+            {
+                Assert.Throws<FileNotFoundException>(() => Assembly.LoadFrom(fullPath));
+            }
+            else
             {
                 ValidateLoadFromPathIntoALCAndUnload(nameof(LoadFrameworkAssemblyFromPathAndUnload), fullPath);
             }

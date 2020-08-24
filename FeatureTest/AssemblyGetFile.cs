@@ -11,16 +11,16 @@ namespace FeatureTest
     public class AssemblyGetFile
     {
         [Fact]
-        public void GetFilesOnCoreLib() => ValidateBundlededGetFiles(typeof(object).Assembly);
+        public void GetFilesOnCoreLib() => ValidateFrameworkAssemblyGetFiles(typeof(object).Assembly);
 
         [Fact]
-        public void GetFilesOnAppAssembly() => ValidateBundlededGetFiles(typeof(ModuleFullyQualifiedName).Assembly);
+        public void GetFilesOnAppAssembly() => ValidateApplicationAssemblyGetFiles(typeof(ModuleFullyQualifiedName).Assembly);
 
         [Fact]
-        public void GetFilesOnProjectReferenceAssembly() => ValidateBundlededGetFiles(typeof(DeploymentUtilities).Assembly);
+        public void GetFilesOnProjectReferenceAssembly() => ValidateApplicationAssemblyGetFiles(typeof(DeploymentUtilities).Assembly);
 
         [Fact]
-        public void GetFilesOnPackageReferenceAssembly() => ValidateBundlededGetFiles(typeof(Assert).Assembly);
+        public void GetFilesOnPackageReferenceAssembly() => ValidateApplicationAssemblyGetFiles(typeof(Assert).Assembly);
 
         [Fact]
         public void GetFilesOnExternalAssembly()
@@ -39,7 +39,19 @@ namespace FeatureTest
             ValidateInMemoryGetFiles(assembly);
         }
 
-        void ValidateBundlededGetFiles(Assembly assembly)
+        void ValidateFrameworkAssemblyGetFiles(Assembly assembly)
+        {
+            if (DeploymentUtilities.IsSingleFile && DeploymentUtilities.IsSelfContained)
+            {
+                ValidateInMemoryGetFiles(assembly);
+            }
+            else
+            {
+                ValidateOnDiskGetFiles(assembly);
+            }
+        }
+
+        void ValidateApplicationAssemblyGetFiles(Assembly assembly)
         {
             if (DeploymentUtilities.IsSingleFile)
             {

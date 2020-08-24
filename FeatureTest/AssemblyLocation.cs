@@ -10,16 +10,16 @@ namespace FeatureTest
     public class AssemblyLocation
     {
         [Fact]
-        public void LocationOfCoreLib() => ValidateBundledAssemblyLocation(typeof(object).Assembly);
+        public void LocationOfCoreLib() => ValidateFrameworkAssemblyLocation(typeof(object).Assembly);
 
         [Fact]
-        public void LocationOfAppAssembly() => ValidateBundledAssemblyLocation(typeof(AssemblyLocation).Assembly);
+        public void LocationOfAppAssembly() => ValidateApplicationAssemblyLocation(typeof(AssemblyLocation).Assembly);
 
         [Fact]
-        public void LocationOfProjectReferenceAssembly() => ValidateBundledAssemblyLocation(typeof(DeploymentUtilities).Assembly);
+        public void LocationOfProjectReferenceAssembly() => ValidateApplicationAssemblyLocation(typeof(DeploymentUtilities).Assembly);
 
         [Fact]
-        public void LocationOfPackageReferenceAssembly() => ValidateBundledAssemblyLocation(typeof(Assert).Assembly);
+        public void LocationOfPackageReferenceAssembly() => ValidateApplicationAssemblyLocation(typeof(Assert).Assembly);
 
         [Fact]
         public void LocationOfExternalAssembly()
@@ -46,7 +46,19 @@ namespace FeatureTest
             Assert.False(assembly.IsDynamic);
         }
 
-        private void ValidateBundledAssemblyLocation(Assembly assembly)
+        private void ValidateFrameworkAssemblyLocation(Assembly assembly)
+        {
+            if (DeploymentUtilities.IsSingleFile && DeploymentUtilities.IsSelfContained)
+            {
+                ValidateEmptyAssemblyLocation(assembly);
+            }
+            else
+            {
+                ValidateOnDiskAssemblyLocation(assembly);
+            }
+        }
+
+        private void ValidateApplicationAssemblyLocation(Assembly assembly)
         {
             if (DeploymentUtilities.IsSingleFile)
             {

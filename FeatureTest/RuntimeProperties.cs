@@ -13,7 +13,7 @@ namespace FeatureTest
             string appContextDepsFiles = (string)AppContext.GetData("APP_CONTEXT_DEPS_FILES");
             if (DeploymentUtilities.IsSingleFile)
             {
-                Assert.Null(appContextDepsFiles);
+                Assert.Equal("", appContextDepsFiles);
             }
             else
             {

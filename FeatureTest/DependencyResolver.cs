@@ -2,7 +2,6 @@
 using System.IO;
 using System.Reflection;
 using System.Runtime.Loader;
-using UtilitiesLibrary;
 using Xunit;
 
 namespace FeatureTest

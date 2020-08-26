@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Runtime.Loader;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,9 +28,9 @@ namespace FeatureTest
         public void LoadFromNonExistentPath()
         {
             var exception = Assert.Throws<FileNotFoundException>(() =>
-                AssemblyLoadContext.Default.LoadFromAssemblyPath("Z:\\nonexistent.dll"));
+                AssemblyLoadContext.Default.LoadFromAssemblyPath(Path.GetFullPath("nonexistent.dll")));
 
-            if (DeploymentUtilities.IsSelfContained && DeploymentUtilities.IsSingleFile)
+            if (DeploymentUtilities.IsSelfContained && DeploymentUtilities.IsSingleFile && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 Assert.Empty(exception.Message);
             }

@@ -22,6 +22,8 @@ $outPath = "$PSScriptRoot/FeatureTest/bin/"
 $args += "publish"
 $args += "$PSScriptRoot/FeatureTest/FeatureTest.csproj"
 
+$args += "-r:$rid"
+
 if ($sf) {
     $args += "/p:PublishSingleFile=true"
     $outPath += "sf-"
@@ -32,7 +34,6 @@ else {
 
 if ($scd) {
     $args += "--self-contained:true"
-    $args += "-r:$rid"
     $outPath += "scd"
 }
 else {

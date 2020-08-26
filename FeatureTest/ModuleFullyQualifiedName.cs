@@ -11,16 +11,16 @@ namespace FeatureTest
     public class ModuleFullyQualifiedName
     {
         [Fact]
-        public void FullyQualifiedNameOfCoreLib() => ValidateBundledFullyQualifiedName(typeof(object).Assembly);
+        public void FullyQualifiedNameOfCoreLib() => ValidateFrameworkAssemblyFullyQualifiedName(typeof(object).Assembly);
 
         [Fact]
-        public void FullyQualifiedNameOfAppAssembly() => ValidateBundledFullyQualifiedName(typeof(ModuleFullyQualifiedName).Assembly);
+        public void FullyQualifiedNameOfAppAssembly() => ValidateApplicationAssemblyFullyQualifiedName(typeof(ModuleFullyQualifiedName).Assembly);
 
         [Fact]
-        public void FullyQualifiedNameOfProjectReferenceAssembly() => ValidateBundledFullyQualifiedName(typeof(DeploymentUtilities).Assembly);
+        public void FullyQualifiedNameOfProjectReferenceAssembly() => ValidateApplicationAssemblyFullyQualifiedName(typeof(DeploymentUtilities).Assembly);
 
         [Fact]
-        public void FullyQualifiedNameOfPackageReferenceAssembly() => ValidateBundledFullyQualifiedName(typeof(Assert).Assembly);
+        public void FullyQualifiedNameOfPackageReferenceAssembly() => ValidateApplicationAssemblyFullyQualifiedName(typeof(Assert).Assembly);
 
         [Fact]
         public void FullyQualifiedNameOfExternalAssembly()
@@ -39,12 +39,22 @@ namespace FeatureTest
             ValidateUnknownModuleFullyQualifiedName(assembly.GetModules()[0]);
         }
 
-        void ValidateBundledFullyQualifiedName(Assembly assembly)
+        void ValidateFrameworkAssemblyFullyQualifiedName(Assembly assembly)
         {
-            var modules = assembly.GetModules();
-            Assert.Equal(1, modules.Length);
-            var module = modules[0];
+            var module = GetModule(assembly);
+            if (DeploymentUtilities.IsSingleFile && DeploymentUtilities.IsSelfContained)
+            {
+                ValidateUnknownModuleFullyQualifiedName(module);
+            }
+            else
+            {
+                ValidateOnDiskModuleFullyQualifiedName(module);
+            }
+        }
 
+        void ValidateApplicationAssemblyFullyQualifiedName(Assembly assembly)
+        {
+            var module = GetModule(assembly);
             if (DeploymentUtilities.IsSingleFile)
             {
                 ValidateUnknownModuleFullyQualifiedName(module);
@@ -55,19 +65,24 @@ namespace FeatureTest
             }
         }
 
+        Module GetModule(Assembly assembly)
+        {
+            var modules = assembly.GetModules();
+            Assert.Equal(1, modules.Length);
+            return modules[0];
+        }
+
         void ValidateUnknownModuleFullyQualifiedName(Module module)
         {
             // BUG https://github.com/dotnet/runtime/issues/40103
-            if (DeploymentUtilities.IsSingleFile && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (DeploymentUtilities.IsSingleFile && RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && DeploymentUtilities.IsSelfContained)
             {
                 Assert.Throws<FileNotFoundException>(() =>
                 {
-                    Console.WriteLine(module.Name);
                     _ = module.Name;
                 });
                 Assert.Throws<FileNotFoundException>(() =>
                 {
-                    Console.WriteLine(module.FullyQualifiedName);
                     _ = module.FullyQualifiedName;
                 });
             }

@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Runtime.Loader;
 using System.Text;
 using System.Threading.Tasks;
+using UtilitiesLibrary;
 using Xunit;
 
 namespace FeatureTest
@@ -20,6 +21,22 @@ namespace FeatureTest
             Assembly pluginAssembly = testAlc.LoadFromAssemblyPath(filePath);
             Assembly pluginAssemblySecondLoad = testAlc.LoadFromAssemblyPath(filePath);
             Assert.Same(pluginAssembly, pluginAssemblySecondLoad);
+        }
+
+        [Fact]
+        public void LoadFromNonExistentPath()
+        {
+            var exception = Assert.Throws<FileNotFoundException>(() =>
+                AssemblyLoadContext.Default.LoadFromAssemblyPath("Z:\\nonexistent.dll"));
+
+            if (DeploymentUtilities.IsSelfContained && DeploymentUtilities.IsSingleFile)
+            {
+                Assert.Empty(exception.Message);
+            }
+            else
+            {
+                Assert.Contains("nonexistent.dll", exception.Message);
+            }
         }
     }
 }

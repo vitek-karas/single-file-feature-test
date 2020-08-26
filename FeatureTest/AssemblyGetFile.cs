@@ -65,17 +65,8 @@ namespace FeatureTest
 
         void ValidateInMemoryGetFiles(Assembly assembly)
         {
-            // BUG https://github.com/dotnet/runtime/issues/40103
-            if (DeploymentUtilities.IsSingleFile || !RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                Assert.Throws<FileNotFoundException>(() => assembly.GetFiles());
-                Assert.Throws<FileNotFoundException>(() => assembly.GetFile(assembly.GetName().Name + ".dll"));
-            }
-            else
-            {
-                Assert.Throws<IOException>(() => assembly.GetFiles());
-                Assert.Throws<IOException>(() => assembly.GetFile(assembly.GetName().Name + ".dll"));
-            }
+            Assert.Throws<FileNotFoundException>(() => assembly.GetFiles());
+            Assert.Throws<FileNotFoundException>(() => assembly.GetFile(assembly.GetName().Name + ".dll"));
         }
 
         void ValidateOnDiskGetFiles(Assembly assembly)

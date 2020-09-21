@@ -11,11 +11,11 @@
        before running "dotnet publish".
        This only takes effect for self-contained publishes, FDD will still use the active runtime
        installation. -->
-  <PropertyGroup>
+  <!--<PropertyGroup>
     <CustomizePublishSingleFile_RuntimeRepoRoot>F:\dotnet\runtime</CustomizePublishSingleFile_RuntimeRepoRoot>
     <CustomizePublishSingleFile_CoreClrConfig>Windows_NT.x64.Debug</CustomizePublishSingleFile_CoreClrConfig>
     <CustomizePublishSingleFile_CoreHostConfig>win-x64.Debug</CustomizePublishSingleFile_CoreHostConfig>
-  </PropertyGroup>
+  </PropertyGroup>-->
 
   <Import Project="../CustomizePublishSingleFile.targets"/>
 

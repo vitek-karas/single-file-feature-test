@@ -16,9 +16,11 @@ namespace FeatureTest
             // Note: We're not testing CoreLib here since loading CoreLib explicitly from file is forbidden
 
             var assembly = typeof(System.Xml.XmlReader).Assembly;
+#pragma warning disable IL3000
             string fullPath = DeploymentUtilities.IsAssemblyInSingleFile(assembly.GetName().Name)
                 ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, assembly.GetName().Name + ".dll")
                 : assembly.Location;
+#pragma warning restore IL3000
 
             if (DeploymentUtilities.IsAssemblyInSingleFile(assembly.GetName().Name))
             {

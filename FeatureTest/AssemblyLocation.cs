@@ -35,14 +35,18 @@ namespace FeatureTest
             AssemblyLoadContext testAlc = new AssemblyLoadContext(nameof(LocationOfAssemblyLoadedFromStream));
             using var fileStream = File.OpenRead(Path.Join(DeploymentUtilities.ExecutableLocation, "PluginLibrary.dll"));
             Assembly assembly = testAlc.LoadFromStream(fileStream);
+#pragma warning disable IL3000
             Assert.Equal(string.Empty, assembly.Location);
+#pragma warning restore IL3000
 
 #pragma warning disable SYSLIB0012
             Assert.Contains("System.Private.CoreLib", assembly.CodeBase);
             Assert.Contains("System.Private.CoreLib", assembly.EscapedCodeBase);
 #pragma warning restore SYSLIB0012
+#pragma warning disable IL3000
             Assert.Contains("System.Private.CoreLib", assembly.GetName().CodeBase);
             Assert.Contains("System.Private.CoreLib", assembly.GetName().EscapedCodeBase);
+#pragma warning restore IL3000
 
             Assert.False(assembly.IsDynamic);
         }
@@ -61,26 +65,37 @@ namespace FeatureTest
 
         private void ValidateInMemoryAssemblyLocation(Assembly assembly)
         {
+#pragma warning disable IL3000
             Assert.Equal(string.Empty, assembly.Location);
+#pragma warning restore IL3000
 
 #pragma warning disable SYSLIB0012
             Assert.Throws<NotSupportedException>(() => assembly.CodeBase);
             Assert.Throws<NotSupportedException>(() => assembly.EscapedCodeBase);
 #pragma warning restore SYSLIB0012
+#pragma warning disable IL3000
             Assert.Null(assembly.GetName().CodeBase);
             Assert.Null(assembly.GetName().EscapedCodeBase);
+#pragma warning restore IL3000
+
             Assert.False(assembly.IsDynamic);
         }
 
         private void ValidateOnDiskAssemblyLocation(Assembly assembly)
         {
+#pragma warning disable IL3000
             Assert.Contains(assembly.GetName().Name, assembly.Location);
+#pragma warning restore IL3000
+
 #pragma warning disable SYSLIB0012
             Assert.Contains(assembly.GetName().Name, assembly.CodeBase);
             Assert.Contains(assembly.GetName().Name, assembly.EscapedCodeBase);
 #pragma warning restore SYSLIB0012
+#pragma warning disable IL3000
             Assert.Contains(assembly.GetName().Name, assembly.GetName().CodeBase);
             Assert.Contains(assembly.GetName().Name, assembly.GetName().EscapedCodeBase);
+#pragma warning restore IL3000
+
             Assert.False(assembly.IsDynamic);
         }
     }

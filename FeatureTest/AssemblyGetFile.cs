@@ -37,7 +37,7 @@ namespace FeatureTest
             ValidateInMemoryGetFiles(assembly);
         }
 
-        void ValidateAssemblyGetFiles(Assembly assembly)
+        static void ValidateAssemblyGetFiles(Assembly assembly)
         {
             if (DeploymentUtilities.IsAssemblyInSingleFile(assembly.GetName().Name))
             {
@@ -49,20 +49,26 @@ namespace FeatureTest
             }
         }
 
-        void ValidateInMemoryGetFiles(Assembly assembly)
+        static void ValidateInMemoryGetFiles(Assembly assembly)
         {
+#pragma warning disable IL3001
             Assert.Throws<FileNotFoundException>(() => assembly.GetFiles());
             Assert.Throws<FileNotFoundException>(() => assembly.GetFile(assembly.GetName().Name + ".dll"));
+#pragma warning restore IL3001
         }
 
-        void ValidateOnDiskGetFiles(Assembly assembly)
+        static void ValidateOnDiskGetFiles(Assembly assembly)
         {
+#pragma warning disable IL3001
             var files = assembly.GetFiles();
+#pragma warning restore IL3001
             Assert.Equal(1, files.Length);
             var file = files[0];
             Assert.Contains(assembly.GetName().Name, file.Name);
 
+#pragma warning disable IL3001
             file = assembly.GetFile(assembly.GetName().Name + ".dll");
+#pragma warning restore IL3001
             Assert.Contains(assembly.GetName().Name, file.Name);
         }
     }

@@ -16,11 +16,13 @@ namespace FeatureTest
             if (DeploymentUtilities.IsSingleFile && !DeploymentUtilities.IsAssemblyInSingleFile(typeof(AppDomainBaseDirectory).Assembly.GetName().Name))
             {
                 Assert.NotEqual(DeploymentUtilities.ExecutableLocation, AppDomain.CurrentDomain.BaseDirectory);
-                Assert.Equal(Path.GetDirectoryName(typeof(AppDomainBaseDirectory).Assembly.Location), AppDomain.CurrentDomain.BaseDirectory);
+#pragma warning disable IL3000
+                Assert.Equal(Path.GetDirectoryName(typeof(AppDomainBaseDirectory).Assembly.Location) + Path.DirectorySeparatorChar, AppDomain.CurrentDomain.BaseDirectory);
+#pragma warning restore IL3000
             }
             else
             {
-                Assert.Equal(DeploymentUtilities.ExecutableLocation, AppDomain.CurrentDomain.BaseDirectory);
+                Assert.Equal(DeploymentUtilities.ExecutableLocation + Path.DirectorySeparatorChar, AppDomain.CurrentDomain.BaseDirectory);
             }
         }
     }

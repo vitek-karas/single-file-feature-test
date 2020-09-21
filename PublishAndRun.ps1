@@ -2,6 +2,9 @@
 param (
     [switch] $scd,
     [switch] $sf,
+    [switch] $includeAllContent,
+    [switch] $includeNativeLibs,
+    [switch] $includePdbs,
     [string] $RuntimeRepoLocation
 )
 
@@ -39,6 +42,21 @@ if ($scd) {
 else {
     $args += "--self-contained:false"
     $outPath += "fdd"
+}
+
+if ($includeAllContent) {
+    $args += "/p:IncludeAllContentForSelfExtract=true"
+    $outPath += "-extall"
+}
+
+if ($includeNativeLibs) {
+    $args += "/p:IncludeNativeLibrariesForSelfExtract=true"
+    $outPath += "-extlib"
+}
+
+if ($includePdbs) {
+    $args += "/p:IncludeSymbolsInSingleFile=true"
+    $outPath += "-extpdb"
 }
 
 $args += "-o"

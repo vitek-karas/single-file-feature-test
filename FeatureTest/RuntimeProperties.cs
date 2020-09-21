@@ -11,14 +11,13 @@ namespace FeatureTest
         public void AppContextDepsFiles()
         {
             string appContextDepsFiles = (string)AppContext.GetData("APP_CONTEXT_DEPS_FILES");
-            // BUG https://github.com/dotnet/runtime/issues/41267
-            //if (DeploymentUtilities.IsSingleFile)
-            //{
-            //    Assert.Equal("", appContextDepsFiles);
-            //}
-            //else
+            string expectedPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FeatureTest.deps.json");
+            if (DeploymentUtilities.IsSingleFile)
             {
-                string expectedPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FeatureTest.deps.json");
+                Assert.DoesNotContain(expectedPath, appContextDepsFiles);
+            }
+            else
+            {
                 Assert.Contains(expectedPath, appContextDepsFiles);
             }
         }

@@ -50,7 +50,7 @@ namespace FeatureTest
         {
             if (DeploymentUtilities.IsSingleFile && DeploymentUtilities.IsSelfContained)
             {
-                ValidateEmptyAssemblyLocation(assembly);
+                ValidateInMemoryAssemblyLocation(assembly);
             }
             else
             {
@@ -62,7 +62,7 @@ namespace FeatureTest
         {
             if (DeploymentUtilities.IsSingleFile)
             {
-                ValidateEmptyAssemblyLocation(assembly);
+                ValidateInMemoryAssemblyLocation(assembly);
             }
             else
             {
@@ -70,20 +70,14 @@ namespace FeatureTest
             }
         }
 
-        private void ValidateEmptyAssemblyLocation(Assembly assembly)
+        private void ValidateInMemoryAssemblyLocation(Assembly assembly)
         {
             Assert.Equal(string.Empty, assembly.Location);
 
-            // BUG: https://github.com/dotnet/runtime/issues/40087
-            //Assert.Equal(string.Empty, assembly.CodeBase);
-            //Assert.Equal(string.Empty, assembly.EscapedCodeBase);
-            //Assert.Equal(string.Empty, assembly.GetName().CodeBase);
-            //Assert.Equal(string.Empty, assembly.GetName().EscapedCodeBase);
-
-            Assert.Contains(assembly.GetName().Name, assembly.CodeBase);
-            Assert.Contains(assembly.GetName().Name, assembly.EscapedCodeBase);
-            Assert.Contains(assembly.GetName().Name, assembly.GetName().CodeBase);
-            Assert.Contains(assembly.GetName().Name, assembly.GetName().EscapedCodeBase);
+            Assert.Throws<NotSupportedException>(() => assembly.CodeBase);
+            Assert.Throws<NotSupportedException>(() => assembly.EscapedCodeBase);
+            Assert.Null(assembly.GetName().CodeBase);
+            Assert.Null(assembly.GetName().EscapedCodeBase);
             Assert.False(assembly.IsDynamic);
         }
 

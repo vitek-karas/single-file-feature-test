@@ -16,11 +16,11 @@ namespace FeatureTest
             // Note: We're not testing CoreLib here since loading CoreLib explicitly from file is forbidden
 
             var assembly = typeof(System.Xml.XmlReader).Assembly;
-            string fullPath = DeploymentUtilities.IsSelfContained
+            string fullPath = DeploymentUtilities.IsAssemblyInSingleFile(assembly.GetName().Name)
                 ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, assembly.GetName().Name + ".dll")
                 : assembly.Location;
 
-            if (DeploymentUtilities.IsSingleFile && DeploymentUtilities.IsSelfContained)
+            if (DeploymentUtilities.IsAssemblyInSingleFile(assembly.GetName().Name))
             {
                 Assert.Throws<FileNotFoundException>(() => Assembly.LoadFrom(fullPath));
             }
@@ -40,12 +40,12 @@ namespace FeatureTest
         public void LoadFromPackageReferenceAssembly() => ValidateLoadFromInAppAssembly(typeof(Assert).Assembly);
 
         [Fact]
-        public void LoadFromExternalAssembly() => ValidateLoadFromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PluginLibrary.dll"));
+        public void LoadFromExternalAssembly() => ValidateLoadFromFile(Path.Combine(DeploymentUtilities.ExecutableLocation, "PluginLibrary.dll"));
 
         void ValidateLoadFromInAppAssembly(Assembly assembly)
         {
             string fullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, assembly.GetName().Name + ".dll");
-            if (DeploymentUtilities.IsSingleFile)
+            if (DeploymentUtilities.IsAssemblyInSingleFile(assembly.GetName().Name))
             {
                 Assert.Throws<FileNotFoundException>(() => Assembly.LoadFrom(fullPath));
             }

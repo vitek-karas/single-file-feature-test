@@ -1,7 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Runtime.Loader;
 using UtilitiesLibrary;
 using Xunit;
@@ -11,22 +9,22 @@ namespace FeatureTest
     public class AssemblyGetFile
     {
         [Fact]
-        public void GetFilesOnCoreLib() => ValidateFrameworkAssemblyGetFiles(typeof(object).Assembly);
+        public void GetFilesOnCoreLib() => ValidateAssemblyGetFiles(typeof(object).Assembly);
 
         [Fact]
-        public void GetFilesOnAppAssembly() => ValidateApplicationAssemblyGetFiles(typeof(ModuleFullyQualifiedName).Assembly);
+        public void GetFilesOnAppAssembly() => ValidateAssemblyGetFiles(typeof(ModuleFullyQualifiedName).Assembly);
 
         [Fact]
-        public void GetFilesOnProjectReferenceAssembly() => ValidateApplicationAssemblyGetFiles(typeof(DeploymentUtilities).Assembly);
+        public void GetFilesOnProjectReferenceAssembly() => ValidateAssemblyGetFiles(typeof(DeploymentUtilities).Assembly);
 
         [Fact]
-        public void GetFilesOnPackageReferenceAssembly() => ValidateApplicationAssemblyGetFiles(typeof(Assert).Assembly);
+        public void GetFilesOnPackageReferenceAssembly() => ValidateAssemblyGetFiles(typeof(Assert).Assembly);
 
         [Fact]
         public void GetFilesOnExternalAssembly()
         {
             AssemblyLoadContext testAlc = new AssemblyLoadContext(nameof(GetFilesOnExternalAssembly));
-            Assembly pluginAssembly = testAlc.LoadFromAssemblyPath(Path.Join(AppDomain.CurrentDomain.BaseDirectory, "PluginLibrary.dll"));
+            Assembly pluginAssembly = testAlc.LoadFromAssemblyPath(Path.Join(DeploymentUtilities.ExecutableLocation, "PluginLibrary.dll"));
             ValidateOnDiskGetFiles(pluginAssembly);
         }
 
@@ -34,26 +32,14 @@ namespace FeatureTest
         public void GetFilesOnAssemblyLoadedFromStream()
         {
             AssemblyLoadContext testAlc = new AssemblyLoadContext(nameof(GetFilesOnAssemblyLoadedFromStream));
-            using var fileStream = File.OpenRead(Path.Join(AppDomain.CurrentDomain.BaseDirectory, "PluginLibrary.dll"));
+            using var fileStream = File.OpenRead(Path.Join(DeploymentUtilities.ExecutableLocation, "PluginLibrary.dll"));
             Assembly assembly = testAlc.LoadFromStream(fileStream);
             ValidateInMemoryGetFiles(assembly);
         }
 
-        void ValidateFrameworkAssemblyGetFiles(Assembly assembly)
+        void ValidateAssemblyGetFiles(Assembly assembly)
         {
-            if (DeploymentUtilities.IsSingleFile && DeploymentUtilities.IsSelfContained)
-            {
-                ValidateInMemoryGetFiles(assembly);
-            }
-            else
-            {
-                ValidateOnDiskGetFiles(assembly);
-            }
-        }
-
-        void ValidateApplicationAssemblyGetFiles(Assembly assembly)
-        {
-            if (DeploymentUtilities.IsSingleFile)
+            if (DeploymentUtilities.IsAssemblyInSingleFile(assembly.GetName().Name))
             {
                 ValidateInMemoryGetFiles(assembly);
             }

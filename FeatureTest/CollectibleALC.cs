@@ -25,7 +25,7 @@ namespace FeatureTest
                 ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, assembly.GetName().Name + ".dll")
                 : assembly.Location;
 
-            if (DeploymentUtilities.IsSingleFile && DeploymentUtilities.IsSelfContained)
+            if (DeploymentUtilities.IsAssemblyInSingleFile(assembly.GetName().Name))
             {
                 Assert.Throws<FileNotFoundException>(() => Assembly.LoadFrom(fullPath));
             }
@@ -37,7 +37,7 @@ namespace FeatureTest
 
         [Fact]
         public void LoadExternalAssemblyFromPathAndUnload() =>
-            ValidateLoadFromPathIntoALCAndUnload(nameof(LoadExternalAssemblyFromPathAndUnload), Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PluginLibrary.dll"));
+            ValidateLoadFromPathIntoALCAndUnload(nameof(LoadExternalAssemblyFromPathAndUnload), Path.Combine(DeploymentUtilities.ExecutableLocation, "PluginLibrary.dll"));
 
         private void ValidateLoadIntoALCAndUnload(string alcName, string assemblyName)
         {

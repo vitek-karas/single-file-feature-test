@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
 
 namespace UtilitiesLibrary
 {
@@ -32,6 +34,33 @@ namespace UtilitiesLibrary
 
                 return _isSelfContained.Value;
             }
+        }
+
+        private static string _executableLocation;
+
+        public static string ExecutableLocation
+        {
+            get
+            {
+                if (_executableLocation == null)
+                {
+                    _executableLocation = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+                }
+
+                return _executableLocation;
+            }
+        }
+
+        private static string _trustedPlatformAssemblies;
+
+        public static bool IsAssemblyInSingleFile(string assemblyName)
+        {
+            if (_trustedPlatformAssemblies == null)
+            {
+                _trustedPlatformAssemblies = (string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES");
+            }
+
+            return !_trustedPlatformAssemblies.Contains(assemblyName + ".dll");
         }
     }
 }

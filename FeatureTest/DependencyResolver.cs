@@ -1,7 +1,7 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
 using System.Runtime.Loader;
+using UtilitiesLibrary;
 using Xunit;
 
 namespace FeatureTest
@@ -11,7 +11,7 @@ namespace FeatureTest
         [Fact]
         public void ResolvePluginFromBaseDirectory()
         {
-            string pluginPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PluginLibrary.dll");
+            string pluginPath = Path.Combine(DeploymentUtilities.ExecutableLocation, "PluginLibrary.dll");
             var resolver = new AssemblyDependencyResolver(pluginPath);
             Assert.Equal(pluginPath, resolver.ResolveAssemblyToPath(new AssemblyName("PluginLibrary")), ignoreCase: true);
             Assert.Null(resolver.ResolveAssemblyToPath(new AssemblyName("UtilitiesLibrary")));
@@ -23,11 +23,11 @@ namespace FeatureTest
             string subDirectory = Path.Combine(Path.GetTempPath(), "FeatureTest.Temp");
             Directory.CreateDirectory(subDirectory);
             File.Copy(
-                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PluginLibrary.dll"), 
+                Path.Combine(DeploymentUtilities.ExecutableLocation, "PluginLibrary.dll"), 
                 Path.Combine(subDirectory, "PluginLibrary.dll"),
                 overwrite: true);
             File.Copy(
-                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PluginLibrary.deps.json"),
+                Path.Combine(DeploymentUtilities.ExecutableLocation, "PluginLibrary.deps.json"),
                 Path.Combine(subDirectory, "PluginLibrary.deps.json"),
                 overwrite: true);
 

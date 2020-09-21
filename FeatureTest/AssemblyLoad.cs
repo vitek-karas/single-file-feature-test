@@ -1,7 +1,7 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
 using System.Runtime.Loader;
+using UtilitiesLibrary;
 using Xunit;
 
 namespace FeatureTest
@@ -30,7 +30,7 @@ namespace FeatureTest
         public void LoadPreloadedExternalAssembly()
         {
             AssemblyLoadContext testAlc = new AssemblyLoadContext(nameof(LoadPreloadedExternalAssembly));
-            Assembly pluginAssembly = testAlc.LoadFromAssemblyPath(Path.Join(AppDomain.CurrentDomain.BaseDirectory, "PluginLibrary.dll"));
+            Assembly pluginAssembly = testAlc.LoadFromAssemblyPath(Path.Join(DeploymentUtilities.ExecutableLocation, "PluginLibrary.dll"));
             using var scope = testAlc.EnterContextualReflection();
             ValidateAssemblyLoad("PluginLibrary");
         }
@@ -39,7 +39,7 @@ namespace FeatureTest
         public void LoadPreloadedAssemblyFromStream()
         {
             AssemblyLoadContext testAlc = new AssemblyLoadContext(nameof(LoadPreloadedExternalAssembly));
-            using var fileStream = File.OpenRead(Path.Join(AppDomain.CurrentDomain.BaseDirectory, "PluginLibrary.dll"));
+            using var fileStream = File.OpenRead(Path.Join(DeploymentUtilities.ExecutableLocation, "PluginLibrary.dll"));
             Assembly assembly = testAlc.LoadFromStream(fileStream);
             using var scope = testAlc.EnterContextualReflection();
             ValidateAssemblyLoad("PluginLibrary");

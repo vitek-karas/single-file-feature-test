@@ -11,22 +11,22 @@ namespace FeatureTest
     public class ModuleFullyQualifiedName
     {
         [Fact]
-        public void FullyQualifiedNameOfCoreLib() => ValidateFrameworkAssemblyFullyQualifiedName(typeof(object).Assembly);
+        public void FullyQualifiedNameOfCoreLib() => ValidateAssemblyFullyQualifiedName(typeof(object).Assembly);
 
         [Fact]
-        public void FullyQualifiedNameOfAppAssembly() => ValidateApplicationAssemblyFullyQualifiedName(typeof(ModuleFullyQualifiedName).Assembly);
+        public void FullyQualifiedNameOfAppAssembly() => ValidateAssemblyFullyQualifiedName(typeof(ModuleFullyQualifiedName).Assembly);
 
         [Fact]
-        public void FullyQualifiedNameOfProjectReferenceAssembly() => ValidateApplicationAssemblyFullyQualifiedName(typeof(DeploymentUtilities).Assembly);
+        public void FullyQualifiedNameOfProjectReferenceAssembly() => ValidateAssemblyFullyQualifiedName(typeof(DeploymentUtilities).Assembly);
 
         [Fact]
-        public void FullyQualifiedNameOfPackageReferenceAssembly() => ValidateApplicationAssemblyFullyQualifiedName(typeof(Assert).Assembly);
+        public void FullyQualifiedNameOfPackageReferenceAssembly() => ValidateAssemblyFullyQualifiedName(typeof(Assert).Assembly);
 
         [Fact]
         public void FullyQualifiedNameOfExternalAssembly()
         {
             AssemblyLoadContext testAlc = new AssemblyLoadContext(nameof(FullyQualifiedNameOfExternalAssembly));
-            Assembly pluginAssembly = testAlc.LoadFromAssemblyPath(Path.Join(AppDomain.CurrentDomain.BaseDirectory, "PluginLibrary.dll"));
+            Assembly pluginAssembly = testAlc.LoadFromAssemblyPath(Path.Join(DeploymentUtilities.ExecutableLocation, "PluginLibrary.dll"));
             ValidateOnDiskModuleFullyQualifiedName(pluginAssembly.GetModules()[0]);
         }
 
@@ -34,42 +34,24 @@ namespace FeatureTest
         public void FullyQualifiedNameOfAssemblyLoadedFromStream()
         {
             AssemblyLoadContext testAlc = new AssemblyLoadContext(nameof(FullyQualifiedNameOfAssemblyLoadedFromStream));
-            using var fileStream = File.OpenRead(Path.Join(AppDomain.CurrentDomain.BaseDirectory, "PluginLibrary.dll"));
+            using var fileStream = File.OpenRead(Path.Join(DeploymentUtilities.ExecutableLocation, "PluginLibrary.dll"));
             Assembly assembly = testAlc.LoadFromStream(fileStream);
             ValidateUnknownModuleFullyQualifiedName(assembly.GetModules()[0]);
         }
 
-        void ValidateFrameworkAssemblyFullyQualifiedName(Assembly assembly)
-        {
-            var module = GetModule(assembly);
-            if (DeploymentUtilities.IsSingleFile && DeploymentUtilities.IsSelfContained)
-            {
-                ValidateUnknownModuleFullyQualifiedName(module);
-            }
-            else
-            {
-                ValidateOnDiskModuleFullyQualifiedName(module);
-            }
-        }
-
-        void ValidateApplicationAssemblyFullyQualifiedName(Assembly assembly)
-        {
-            var module = GetModule(assembly);
-            if (DeploymentUtilities.IsSingleFile)
-            {
-                ValidateUnknownModuleFullyQualifiedName(module);
-            }
-            else
-            {
-                ValidateOnDiskModuleFullyQualifiedName(module);
-            }
-        }
-
-        Module GetModule(Assembly assembly)
+        void ValidateAssemblyFullyQualifiedName(Assembly assembly)
         {
             var modules = assembly.GetModules();
             Assert.Equal(1, modules.Length);
-            return modules[0];
+            var module =  modules[0];
+            if (DeploymentUtilities.IsAssemblyInSingleFile(assembly.GetName().Name))
+            {
+                ValidateUnknownModuleFullyQualifiedName(module);
+            }
+            else
+            {
+                ValidateOnDiskModuleFullyQualifiedName(module);
+            }
         }
 
         void ValidateUnknownModuleFullyQualifiedName(Module module)

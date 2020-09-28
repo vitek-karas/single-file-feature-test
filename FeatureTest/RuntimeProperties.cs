@@ -22,7 +22,7 @@ namespace FeatureTest
                 Assert.Contains(expectedPath, appContextDepsFiles);
             }
 
-            foreach (string path in appContextDepsFiles.Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            foreach (string path in appContextDepsFiles.Split(";", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
             {
                 if (!File.Exists(path))
                 {

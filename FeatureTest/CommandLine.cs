@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using UtilitiesLibrary;
 using Xunit;
 
@@ -12,7 +13,13 @@ namespace FeatureTest
         {
             if (DeploymentUtilities.IsSingleFile)
             {
-                Assert.Equal(Path.Combine(DeploymentUtilities.ExecutableLocation, "FeatureTest.exe"), Environment.GetCommandLineArgs()[0]);
+                string executableName = typeof(CommandLine).Assembly.GetName().Name;
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    executableName += ".exe";
+                }
+
+                Assert.Equal(Path.Combine(DeploymentUtilities.ExecutableLocation, executableName), Environment.GetCommandLineArgs()[0]);
             }
             else
             {

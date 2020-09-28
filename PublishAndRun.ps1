@@ -5,6 +5,7 @@ param (
     [switch] $includeAllContent,
     [switch] $includeNativeLibs,
     [switch] $includePdbs,
+    [switch] $bl,
     [string] $RuntimeRepoLocation
 )
 
@@ -57,6 +58,10 @@ if ($includeNativeLibs) {
 if ($includePdbs) {
     $args += "/p:IncludeSymbolsInSingleFile=true"
     $outPath += "-extpdb"
+}
+
+if ($bl) {
+    $args += "/bl"
 }
 
 $args += "-o"

@@ -6,7 +6,8 @@ param (
     [switch] $includeNativeLibs,
     [switch] $includePdbs,
     [switch] $bl,
-    [string] $RuntimeRepoLocation
+    [string] $RuntimeRepoLocation,
+    [string] $sharedFrameworkLocation
 )
 
 if ([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)) {
@@ -79,4 +80,13 @@ Write-Host "dotnet" $args
 
 Write-Host " "
 Write-Host $outPath/FeatureTest
-& $outPath/FeatureTest
+
+$previousDotNetRoot = $env:DOTNET_ROOT
+if (-Not [string]::IsNullOrEmpty($sharedFrameworkLocation))
+{
+    $env:DOTNET_ROOT=$sharedFrameworkLocation
+}
+
+& $outPath/FeatureTest --roll-forward Major
+
+$env:DOTNET_ROOT=$previousDotNetRoot
